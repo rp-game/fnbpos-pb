@@ -15,4 +15,14 @@ message StockShortfall {
   string order_id = 4;
   string sale_line_id = 5;
   string menu_item_id = 6;
+  string material_id = 7;                  // v0.3.0: NVL bị âm (impl trừ theo material)
+  fnbpos.common.v1.Quantity on_hand = 8;   // v0.3.0: tồn sau khi trừ (âm)
+}
+
+// fnb.stock.recipe_missing — fnb -> pos/ops: món ĐÃ BÁN nhưng KHÔNG có recipe (BOM) → không trừ được kho.
+message RecipeMissing {
+  fnbpos.common.v1.Envelope envelope = 1;
+  string outlet_id = 2;
+  string order_id = 3;
+  string menu_item_id = 4;
 }

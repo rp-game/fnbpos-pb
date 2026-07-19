@@ -33,12 +33,23 @@ message MenuItem {
 // Ba event nuôi read-model của pos — CÙNG một `version` đơn điệu per (outlet, menu_item) (D3).
 
 // fnb.menu.changed — thêm/sửa/xoá (deleted=tombstone).
+// v0.3.0: FAT event — mang đủ dữ liệu nuôi read-model (pos KHÔNG cần query lại). Biến thể/nhóm modifier
+// đi dạng JSON (jsonb read-model) để giữ nguyên cấu trúc lồng — envelope/wire vẫn là PROTO.
 message MenuChanged {
   fnbpos.common.v1.Envelope envelope = 1;
   string outlet_id = 2;
   string menu_item_id = 3;
   uint64 version = 4;
   bool deleted = 5;                       // tombstone: giữ tới hết cửa sổ replay
+  string code = 6;
+  string name = 7;
+  fnbpos.common.v1.Money price = 8;       // giá net (amount_minor + currency)
+  string tax_group = 9;
+  repeated string channels = 10;          // allow-list kênh (pos,kiosk,…)
+  bool active = 11;
+  bool is_combo = 12;
+  string variations_json = 13;            // jsonb biến thể (G1-03)
+  string modifier_groups_json = 14;       // jsonb nhóm modifier (G1-04)
 }
 
 // fnb.price.changed — đổi giá/thuế-suất.

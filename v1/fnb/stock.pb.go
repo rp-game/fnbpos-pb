@@ -32,6 +32,8 @@ type StockShortfall struct {
 	OrderId       string                 `protobuf:"bytes,4,opt,name=order_id,json=orderId,proto3" json:"order_id,omitempty"`
 	SaleLineId    string                 `protobuf:"bytes,5,opt,name=sale_line_id,json=saleLineId,proto3" json:"sale_line_id,omitempty"`
 	MenuItemId    string                 `protobuf:"bytes,6,opt,name=menu_item_id,json=menuItemId,proto3" json:"menu_item_id,omitempty"`
+	MaterialId    string                 `protobuf:"bytes,7,opt,name=material_id,json=materialId,proto3" json:"material_id,omitempty"` // v0.3.0: NVL bị âm (impl trừ theo material)
+	OnHand        *common.Quantity       `protobuf:"bytes,8,opt,name=on_hand,json=onHand,proto3" json:"on_hand,omitempty"`             // v0.3.0: tồn sau khi trừ (âm)
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -108,11 +110,94 @@ func (x *StockShortfall) GetMenuItemId() string {
 	return ""
 }
 
+func (x *StockShortfall) GetMaterialId() string {
+	if x != nil {
+		return x.MaterialId
+	}
+	return ""
+}
+
+func (x *StockShortfall) GetOnHand() *common.Quantity {
+	if x != nil {
+		return x.OnHand
+	}
+	return nil
+}
+
+// fnb.stock.recipe_missing — fnb -> pos/ops: món ĐÃ BÁN nhưng KHÔNG có recipe (BOM) → không trừ được kho.
+type RecipeMissing struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Envelope      *common.Envelope       `protobuf:"bytes,1,opt,name=envelope,proto3" json:"envelope,omitempty"`
+	OutletId      string                 `protobuf:"bytes,2,opt,name=outlet_id,json=outletId,proto3" json:"outlet_id,omitempty"`
+	OrderId       string                 `protobuf:"bytes,3,opt,name=order_id,json=orderId,proto3" json:"order_id,omitempty"`
+	MenuItemId    string                 `protobuf:"bytes,4,opt,name=menu_item_id,json=menuItemId,proto3" json:"menu_item_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RecipeMissing) Reset() {
+	*x = RecipeMissing{}
+	mi := &file_fnb_v1_stock_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RecipeMissing) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RecipeMissing) ProtoMessage() {}
+
+func (x *RecipeMissing) ProtoReflect() protoreflect.Message {
+	mi := &file_fnb_v1_stock_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RecipeMissing.ProtoReflect.Descriptor instead.
+func (*RecipeMissing) Descriptor() ([]byte, []int) {
+	return file_fnb_v1_stock_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *RecipeMissing) GetEnvelope() *common.Envelope {
+	if x != nil {
+		return x.Envelope
+	}
+	return nil
+}
+
+func (x *RecipeMissing) GetOutletId() string {
+	if x != nil {
+		return x.OutletId
+	}
+	return ""
+}
+
+func (x *RecipeMissing) GetOrderId() string {
+	if x != nil {
+		return x.OrderId
+	}
+	return ""
+}
+
+func (x *RecipeMissing) GetMenuItemId() string {
+	if x != nil {
+		return x.MenuItemId
+	}
+	return ""
+}
+
 var File_fnb_v1_stock_proto protoreflect.FileDescriptor
 
 const file_fnb_v1_stock_proto_rawDesc = "" +
 	"\n" +
-	"\x12fnb/v1/stock.proto\x12\rfnbpos.fnb.v1\x1a\x18common/v1/envelope.proto\"\xe7\x01\n" +
+	"\x12fnb/v1/stock.proto\x12\rfnbpos.fnb.v1\x1a\x18common/v1/envelope.proto\"\xbd\x02\n" +
 	"\x0eStockShortfall\x126\n" +
 	"\benvelope\x18\x01 \x01(\v2\x1a.fnbpos.common.v1.EnvelopeR\benvelope\x12\x1b\n" +
 	"\toutlet_id\x18\x02 \x01(\tR\boutletId\x12!\n" +
@@ -121,6 +206,15 @@ const file_fnb_v1_stock_proto_rawDesc = "" +
 	"\fsale_line_id\x18\x05 \x01(\tR\n" +
 	"saleLineId\x12 \n" +
 	"\fmenu_item_id\x18\x06 \x01(\tR\n" +
+	"menuItemId\x12\x1f\n" +
+	"\vmaterial_id\x18\a \x01(\tR\n" +
+	"materialId\x123\n" +
+	"\aon_hand\x18\b \x01(\v2\x1a.fnbpos.common.v1.QuantityR\x06onHand\"\xa1\x01\n" +
+	"\rRecipeMissing\x126\n" +
+	"\benvelope\x18\x01 \x01(\v2\x1a.fnbpos.common.v1.EnvelopeR\benvelope\x12\x1b\n" +
+	"\toutlet_id\x18\x02 \x01(\tR\boutletId\x12\x19\n" +
+	"\border_id\x18\x03 \x01(\tR\aorderId\x12 \n" +
+	"\fmenu_item_id\x18\x04 \x01(\tR\n" +
 	"menuItemIdB%Z#github.com/rp-game/fnbpos-pb/v1/fnbb\x06proto3"
 
 var (
@@ -135,18 +229,22 @@ func file_fnb_v1_stock_proto_rawDescGZIP() []byte {
 	return file_fnb_v1_stock_proto_rawDescData
 }
 
-var file_fnb_v1_stock_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_fnb_v1_stock_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_fnb_v1_stock_proto_goTypes = []any{
 	(*StockShortfall)(nil),  // 0: fnbpos.fnb.v1.StockShortfall
-	(*common.Envelope)(nil), // 1: fnbpos.common.v1.Envelope
+	(*RecipeMissing)(nil),   // 1: fnbpos.fnb.v1.RecipeMissing
+	(*common.Envelope)(nil), // 2: fnbpos.common.v1.Envelope
+	(*common.Quantity)(nil), // 3: fnbpos.common.v1.Quantity
 }
 var file_fnb_v1_stock_proto_depIdxs = []int32{
-	1, // 0: fnbpos.fnb.v1.StockShortfall.envelope:type_name -> fnbpos.common.v1.Envelope
-	1, // [1:1] is the sub-list for method output_type
-	1, // [1:1] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	2, // 0: fnbpos.fnb.v1.StockShortfall.envelope:type_name -> fnbpos.common.v1.Envelope
+	3, // 1: fnbpos.fnb.v1.StockShortfall.on_hand:type_name -> fnbpos.common.v1.Quantity
+	2, // 2: fnbpos.fnb.v1.RecipeMissing.envelope:type_name -> fnbpos.common.v1.Envelope
+	3, // [3:3] is the sub-list for method output_type
+	3, // [3:3] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_fnb_v1_stock_proto_init() }
@@ -160,7 +258,7 @@ func file_fnb_v1_stock_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_fnb_v1_stock_proto_rawDesc), len(file_fnb_v1_stock_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   1,
+			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

@@ -244,15 +244,26 @@ func (x *MenuItem) GetOriginalPrice() *common.Money {
 }
 
 // fnb.menu.changed — thêm/sửa/xoá (deleted=tombstone).
+// v0.3.0: FAT event — mang đủ dữ liệu nuôi read-model (pos KHÔNG cần query lại). Biến thể/nhóm modifier
+// đi dạng JSON (jsonb read-model) để giữ nguyên cấu trúc lồng — envelope/wire vẫn là PROTO.
 type MenuChanged struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Envelope      *common.Envelope       `protobuf:"bytes,1,opt,name=envelope,proto3" json:"envelope,omitempty"`
-	OutletId      string                 `protobuf:"bytes,2,opt,name=outlet_id,json=outletId,proto3" json:"outlet_id,omitempty"`
-	MenuItemId    string                 `protobuf:"bytes,3,opt,name=menu_item_id,json=menuItemId,proto3" json:"menu_item_id,omitempty"`
-	Version       uint64                 `protobuf:"varint,4,opt,name=version,proto3" json:"version,omitempty"`
-	Deleted       bool                   `protobuf:"varint,5,opt,name=deleted,proto3" json:"deleted,omitempty"` // tombstone: giữ tới hết cửa sổ replay
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state              protoimpl.MessageState `protogen:"open.v1"`
+	Envelope           *common.Envelope       `protobuf:"bytes,1,opt,name=envelope,proto3" json:"envelope,omitempty"`
+	OutletId           string                 `protobuf:"bytes,2,opt,name=outlet_id,json=outletId,proto3" json:"outlet_id,omitempty"`
+	MenuItemId         string                 `protobuf:"bytes,3,opt,name=menu_item_id,json=menuItemId,proto3" json:"menu_item_id,omitempty"`
+	Version            uint64                 `protobuf:"varint,4,opt,name=version,proto3" json:"version,omitempty"`
+	Deleted            bool                   `protobuf:"varint,5,opt,name=deleted,proto3" json:"deleted,omitempty"` // tombstone: giữ tới hết cửa sổ replay
+	Code               string                 `protobuf:"bytes,6,opt,name=code,proto3" json:"code,omitempty"`
+	Name               string                 `protobuf:"bytes,7,opt,name=name,proto3" json:"name,omitempty"`
+	Price              *common.Money          `protobuf:"bytes,8,opt,name=price,proto3" json:"price,omitempty"` // giá net (amount_minor + currency)
+	TaxGroup           string                 `protobuf:"bytes,9,opt,name=tax_group,json=taxGroup,proto3" json:"tax_group,omitempty"`
+	Channels           []string               `protobuf:"bytes,10,rep,name=channels,proto3" json:"channels,omitempty"` // allow-list kênh (pos,kiosk,…)
+	Active             bool                   `protobuf:"varint,11,opt,name=active,proto3" json:"active,omitempty"`
+	IsCombo            bool                   `protobuf:"varint,12,opt,name=is_combo,json=isCombo,proto3" json:"is_combo,omitempty"`
+	VariationsJson     string                 `protobuf:"bytes,13,opt,name=variations_json,json=variationsJson,proto3" json:"variations_json,omitempty"`               // jsonb biến thể (G1-03)
+	ModifierGroupsJson string                 `protobuf:"bytes,14,opt,name=modifier_groups_json,json=modifierGroupsJson,proto3" json:"modifier_groups_json,omitempty"` // jsonb nhóm modifier (G1-04)
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *MenuChanged) Reset() {
@@ -318,6 +329,69 @@ func (x *MenuChanged) GetDeleted() bool {
 		return x.Deleted
 	}
 	return false
+}
+
+func (x *MenuChanged) GetCode() string {
+	if x != nil {
+		return x.Code
+	}
+	return ""
+}
+
+func (x *MenuChanged) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *MenuChanged) GetPrice() *common.Money {
+	if x != nil {
+		return x.Price
+	}
+	return nil
+}
+
+func (x *MenuChanged) GetTaxGroup() string {
+	if x != nil {
+		return x.TaxGroup
+	}
+	return ""
+}
+
+func (x *MenuChanged) GetChannels() []string {
+	if x != nil {
+		return x.Channels
+	}
+	return nil
+}
+
+func (x *MenuChanged) GetActive() bool {
+	if x != nil {
+		return x.Active
+	}
+	return false
+}
+
+func (x *MenuChanged) GetIsCombo() bool {
+	if x != nil {
+		return x.IsCombo
+	}
+	return false
+}
+
+func (x *MenuChanged) GetVariationsJson() string {
+	if x != nil {
+		return x.VariationsJson
+	}
+	return ""
+}
+
+func (x *MenuChanged) GetModifierGroupsJson() string {
+	if x != nil {
+		return x.ModifierGroupsJson
+	}
+	return ""
 }
 
 // fnb.price.changed — đổi giá/thuế-suất.
@@ -496,14 +570,24 @@ const file_fnb_v1_menu_proto_rawDesc = "" +
 	"\x06active\x18\x05 \x01(\bR\x06active\x12\x18\n" +
 	"\aversion\x18\x06 \x01(\x04R\aversion\x12\x1b\n" +
 	"\ttax_group\x18\a \x01(\tR\btaxGroup\x12>\n" +
-	"\x0eoriginal_price\x18\b \x01(\v2\x17.fnbpos.common.v1.MoneyR\roriginalPrice\"\xb8\x01\n" +
+	"\x0eoriginal_price\x18\b \x01(\v2\x17.fnbpos.common.v1.MoneyR\roriginalPrice\"\xd6\x03\n" +
 	"\vMenuChanged\x126\n" +
 	"\benvelope\x18\x01 \x01(\v2\x1a.fnbpos.common.v1.EnvelopeR\benvelope\x12\x1b\n" +
 	"\toutlet_id\x18\x02 \x01(\tR\boutletId\x12 \n" +
 	"\fmenu_item_id\x18\x03 \x01(\tR\n" +
 	"menuItemId\x12\x18\n" +
 	"\aversion\x18\x04 \x01(\x04R\aversion\x12\x18\n" +
-	"\adeleted\x18\x05 \x01(\bR\adeleted\"\xce\x01\n" +
+	"\adeleted\x18\x05 \x01(\bR\adeleted\x12\x12\n" +
+	"\x04code\x18\x06 \x01(\tR\x04code\x12\x12\n" +
+	"\x04name\x18\a \x01(\tR\x04name\x12-\n" +
+	"\x05price\x18\b \x01(\v2\x17.fnbpos.common.v1.MoneyR\x05price\x12\x1b\n" +
+	"\ttax_group\x18\t \x01(\tR\btaxGroup\x12\x1a\n" +
+	"\bchannels\x18\n" +
+	" \x03(\tR\bchannels\x12\x16\n" +
+	"\x06active\x18\v \x01(\bR\x06active\x12\x19\n" +
+	"\bis_combo\x18\f \x01(\bR\aisCombo\x12'\n" +
+	"\x0fvariations_json\x18\r \x01(\tR\x0evariationsJson\x120\n" +
+	"\x14modifier_groups_json\x18\x0e \x01(\tR\x12modifierGroupsJson\"\xce\x01\n" +
 	"\fPriceChanged\x126\n" +
 	"\benvelope\x18\x01 \x01(\v2\x1a.fnbpos.common.v1.EnvelopeR\benvelope\x12\x1b\n" +
 	"\toutlet_id\x18\x02 \x01(\tR\boutletId\x12 \n" +
@@ -543,20 +627,21 @@ var file_fnb_v1_menu_proto_goTypes = []any{
 	(*common.Money)(nil),            // 7: fnbpos.common.v1.Money
 }
 var file_fnb_v1_menu_proto_depIdxs = []int32{
-	6, // 0: fnbpos.fnb.v1.MenuQueryRequest.envelope:type_name -> fnbpos.common.v1.Envelope
-	6, // 1: fnbpos.fnb.v1.MenuQueryResponse.envelope:type_name -> fnbpos.common.v1.Envelope
-	2, // 2: fnbpos.fnb.v1.MenuQueryResponse.items:type_name -> fnbpos.fnb.v1.MenuItem
-	7, // 3: fnbpos.fnb.v1.MenuItem.price:type_name -> fnbpos.common.v1.Money
-	7, // 4: fnbpos.fnb.v1.MenuItem.original_price:type_name -> fnbpos.common.v1.Money
-	6, // 5: fnbpos.fnb.v1.MenuChanged.envelope:type_name -> fnbpos.common.v1.Envelope
-	6, // 6: fnbpos.fnb.v1.PriceChanged.envelope:type_name -> fnbpos.common.v1.Envelope
-	7, // 7: fnbpos.fnb.v1.PriceChanged.price:type_name -> fnbpos.common.v1.Money
-	6, // 8: fnbpos.fnb.v1.ItemAvailabilityChanged.envelope:type_name -> fnbpos.common.v1.Envelope
-	9, // [9:9] is the sub-list for method output_type
-	9, // [9:9] is the sub-list for method input_type
-	9, // [9:9] is the sub-list for extension type_name
-	9, // [9:9] is the sub-list for extension extendee
-	0, // [0:9] is the sub-list for field type_name
+	6,  // 0: fnbpos.fnb.v1.MenuQueryRequest.envelope:type_name -> fnbpos.common.v1.Envelope
+	6,  // 1: fnbpos.fnb.v1.MenuQueryResponse.envelope:type_name -> fnbpos.common.v1.Envelope
+	2,  // 2: fnbpos.fnb.v1.MenuQueryResponse.items:type_name -> fnbpos.fnb.v1.MenuItem
+	7,  // 3: fnbpos.fnb.v1.MenuItem.price:type_name -> fnbpos.common.v1.Money
+	7,  // 4: fnbpos.fnb.v1.MenuItem.original_price:type_name -> fnbpos.common.v1.Money
+	6,  // 5: fnbpos.fnb.v1.MenuChanged.envelope:type_name -> fnbpos.common.v1.Envelope
+	7,  // 6: fnbpos.fnb.v1.MenuChanged.price:type_name -> fnbpos.common.v1.Money
+	6,  // 7: fnbpos.fnb.v1.PriceChanged.envelope:type_name -> fnbpos.common.v1.Envelope
+	7,  // 8: fnbpos.fnb.v1.PriceChanged.price:type_name -> fnbpos.common.v1.Money
+	6,  // 9: fnbpos.fnb.v1.ItemAvailabilityChanged.envelope:type_name -> fnbpos.common.v1.Envelope
+	10, // [10:10] is the sub-list for method output_type
+	10, // [10:10] is the sub-list for method input_type
+	10, // [10:10] is the sub-list for extension type_name
+	10, // [10:10] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_fnb_v1_menu_proto_init() }

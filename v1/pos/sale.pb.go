@@ -506,6 +506,99 @@ func (x *KitchenLine) GetNote() string {
 	return ""
 }
 
+// pos.kitchen.<tenant>.<outlet>.update — cập nhật vòng đời vé bếp (bump/recall/ready/void). v0.5.0.
+type KitchenTicketUpdate struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Envelope      *common.Envelope       `protobuf:"bytes,1,opt,name=envelope,proto3" json:"envelope,omitempty"`
+	OrderId       string                 `protobuf:"bytes,2,opt,name=order_id,json=orderId,proto3" json:"order_id,omitempty"`
+	OutletId      string                 `protobuf:"bytes,3,opt,name=outlet_id,json=outletId,proto3" json:"outlet_id,omitempty"`
+	LineNo        int32                  `protobuf:"varint,4,opt,name=line_no,json=lineNo,proto3" json:"line_no,omitempty"` // 0 = cả vé
+	Status        string                 `protobuf:"bytes,5,opt,name=status,proto3" json:"status,omitempty"`                // new|preparing|ready|bumped|recalled|voided
+	Station       string                 `protobuf:"bytes,6,opt,name=station,proto3" json:"station,omitempty"`
+	AtUnix        int64                  `protobuf:"varint,7,opt,name=at_unix,json=atUnix,proto3" json:"at_unix,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *KitchenTicketUpdate) Reset() {
+	*x = KitchenTicketUpdate{}
+	mi := &file_pos_v1_sale_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *KitchenTicketUpdate) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*KitchenTicketUpdate) ProtoMessage() {}
+
+func (x *KitchenTicketUpdate) ProtoReflect() protoreflect.Message {
+	mi := &file_pos_v1_sale_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use KitchenTicketUpdate.ProtoReflect.Descriptor instead.
+func (*KitchenTicketUpdate) Descriptor() ([]byte, []int) {
+	return file_pos_v1_sale_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *KitchenTicketUpdate) GetEnvelope() *common.Envelope {
+	if x != nil {
+		return x.Envelope
+	}
+	return nil
+}
+
+func (x *KitchenTicketUpdate) GetOrderId() string {
+	if x != nil {
+		return x.OrderId
+	}
+	return ""
+}
+
+func (x *KitchenTicketUpdate) GetOutletId() string {
+	if x != nil {
+		return x.OutletId
+	}
+	return ""
+}
+
+func (x *KitchenTicketUpdate) GetLineNo() int32 {
+	if x != nil {
+		return x.LineNo
+	}
+	return 0
+}
+
+func (x *KitchenTicketUpdate) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+func (x *KitchenTicketUpdate) GetStation() string {
+	if x != nil {
+		return x.Station
+	}
+	return ""
+}
+
+func (x *KitchenTicketUpdate) GetAtUnix() int64 {
+	if x != nil {
+		return x.AtUnix
+	}
+	return 0
+}
+
 // pos.sale.reversed — void/refund/sửa qty. Idempotent theo reversal_id.
 type SaleReversed struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -522,7 +615,7 @@ type SaleReversed struct {
 
 func (x *SaleReversed) Reset() {
 	*x = SaleReversed{}
-	mi := &file_pos_v1_sale_proto_msgTypes[5]
+	mi := &file_pos_v1_sale_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -534,7 +627,7 @@ func (x *SaleReversed) String() string {
 func (*SaleReversed) ProtoMessage() {}
 
 func (x *SaleReversed) ProtoReflect() protoreflect.Message {
-	mi := &file_pos_v1_sale_proto_msgTypes[5]
+	mi := &file_pos_v1_sale_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -547,7 +640,7 @@ func (x *SaleReversed) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SaleReversed.ProtoReflect.Descriptor instead.
 func (*SaleReversed) Descriptor() ([]byte, []int) {
-	return file_pos_v1_sale_proto_rawDescGZIP(), []int{5}
+	return file_pos_v1_sale_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *SaleReversed) GetEnvelope() *common.Envelope {
@@ -646,7 +739,15 @@ const file_pos_v1_sale_proto_rawDesc = "" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12,\n" +
 	"\x03qty\x18\x03 \x01(\v2\x1a.fnbpos.common.v1.QuantityR\x03qty\x12\x1c\n" +
 	"\tmodifiers\x18\x04 \x03(\tR\tmodifiers\x12\x12\n" +
-	"\x04note\x18\x05 \x01(\tR\x04note\"\xb5\x02\n" +
+	"\x04note\x18\x05 \x01(\tR\x04note\"\xe9\x01\n" +
+	"\x13KitchenTicketUpdate\x126\n" +
+	"\benvelope\x18\x01 \x01(\v2\x1a.fnbpos.common.v1.EnvelopeR\benvelope\x12\x19\n" +
+	"\border_id\x18\x02 \x01(\tR\aorderId\x12\x1b\n" +
+	"\toutlet_id\x18\x03 \x01(\tR\boutletId\x12\x17\n" +
+	"\aline_no\x18\x04 \x01(\x05R\x06lineNo\x12\x16\n" +
+	"\x06status\x18\x05 \x01(\tR\x06status\x12\x18\n" +
+	"\astation\x18\x06 \x01(\tR\astation\x12\x17\n" +
+	"\aat_unix\x18\a \x01(\x03R\x06atUnix\"\xb5\x02\n" +
 	"\fSaleReversed\x126\n" +
 	"\benvelope\x18\x01 \x01(\v2\x1a.fnbpos.common.v1.EnvelopeR\benvelope\x12\x1f\n" +
 	"\vreversal_id\x18\x02 \x01(\tR\n" +
@@ -678,40 +779,42 @@ func file_pos_v1_sale_proto_rawDescGZIP() []byte {
 }
 
 var file_pos_v1_sale_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_pos_v1_sale_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_pos_v1_sale_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_pos_v1_sale_proto_goTypes = []any{
-	(ReversalReason)(0),     // 0: fnbpos.pos.v1.ReversalReason
-	(*SaleCommitted)(nil),   // 1: fnbpos.pos.v1.SaleCommitted
-	(*SaleLine)(nil),        // 2: fnbpos.pos.v1.SaleLine
-	(*Modifier)(nil),        // 3: fnbpos.pos.v1.Modifier
-	(*KitchenTicket)(nil),   // 4: fnbpos.pos.v1.KitchenTicket
-	(*KitchenLine)(nil),     // 5: fnbpos.pos.v1.KitchenLine
-	(*SaleReversed)(nil),    // 6: fnbpos.pos.v1.SaleReversed
-	(*common.Envelope)(nil), // 7: fnbpos.common.v1.Envelope
-	(*common.Quantity)(nil), // 8: fnbpos.common.v1.Quantity
-	(*common.Money)(nil),    // 9: fnbpos.common.v1.Money
+	(ReversalReason)(0),         // 0: fnbpos.pos.v1.ReversalReason
+	(*SaleCommitted)(nil),       // 1: fnbpos.pos.v1.SaleCommitted
+	(*SaleLine)(nil),            // 2: fnbpos.pos.v1.SaleLine
+	(*Modifier)(nil),            // 3: fnbpos.pos.v1.Modifier
+	(*KitchenTicket)(nil),       // 4: fnbpos.pos.v1.KitchenTicket
+	(*KitchenLine)(nil),         // 5: fnbpos.pos.v1.KitchenLine
+	(*KitchenTicketUpdate)(nil), // 6: fnbpos.pos.v1.KitchenTicketUpdate
+	(*SaleReversed)(nil),        // 7: fnbpos.pos.v1.SaleReversed
+	(*common.Envelope)(nil),     // 8: fnbpos.common.v1.Envelope
+	(*common.Quantity)(nil),     // 9: fnbpos.common.v1.Quantity
+	(*common.Money)(nil),        // 10: fnbpos.common.v1.Money
 }
 var file_pos_v1_sale_proto_depIdxs = []int32{
-	7,  // 0: fnbpos.pos.v1.SaleCommitted.envelope:type_name -> fnbpos.common.v1.Envelope
+	8,  // 0: fnbpos.pos.v1.SaleCommitted.envelope:type_name -> fnbpos.common.v1.Envelope
 	2,  // 1: fnbpos.pos.v1.SaleCommitted.lines:type_name -> fnbpos.pos.v1.SaleLine
-	8,  // 2: fnbpos.pos.v1.SaleLine.qty:type_name -> fnbpos.common.v1.Quantity
+	9,  // 2: fnbpos.pos.v1.SaleLine.qty:type_name -> fnbpos.common.v1.Quantity
 	3,  // 3: fnbpos.pos.v1.SaleLine.modifiers:type_name -> fnbpos.pos.v1.Modifier
-	9,  // 4: fnbpos.pos.v1.SaleLine.unit_price:type_name -> fnbpos.common.v1.Money
-	9,  // 5: fnbpos.pos.v1.SaleLine.line_discount:type_name -> fnbpos.common.v1.Money
-	9,  // 6: fnbpos.pos.v1.SaleLine.tax:type_name -> fnbpos.common.v1.Money
-	9,  // 7: fnbpos.pos.v1.SaleLine.cogs_hint:type_name -> fnbpos.common.v1.Money
-	8,  // 8: fnbpos.pos.v1.Modifier.qty:type_name -> fnbpos.common.v1.Quantity
-	7,  // 9: fnbpos.pos.v1.KitchenTicket.envelope:type_name -> fnbpos.common.v1.Envelope
+	10, // 4: fnbpos.pos.v1.SaleLine.unit_price:type_name -> fnbpos.common.v1.Money
+	10, // 5: fnbpos.pos.v1.SaleLine.line_discount:type_name -> fnbpos.common.v1.Money
+	10, // 6: fnbpos.pos.v1.SaleLine.tax:type_name -> fnbpos.common.v1.Money
+	10, // 7: fnbpos.pos.v1.SaleLine.cogs_hint:type_name -> fnbpos.common.v1.Money
+	9,  // 8: fnbpos.pos.v1.Modifier.qty:type_name -> fnbpos.common.v1.Quantity
+	8,  // 9: fnbpos.pos.v1.KitchenTicket.envelope:type_name -> fnbpos.common.v1.Envelope
 	5,  // 10: fnbpos.pos.v1.KitchenTicket.lines:type_name -> fnbpos.pos.v1.KitchenLine
-	8,  // 11: fnbpos.pos.v1.KitchenLine.qty:type_name -> fnbpos.common.v1.Quantity
-	7,  // 12: fnbpos.pos.v1.SaleReversed.envelope:type_name -> fnbpos.common.v1.Envelope
-	0,  // 13: fnbpos.pos.v1.SaleReversed.reason:type_name -> fnbpos.pos.v1.ReversalReason
-	8,  // 14: fnbpos.pos.v1.SaleReversed.new_qty:type_name -> fnbpos.common.v1.Quantity
-	15, // [15:15] is the sub-list for method output_type
-	15, // [15:15] is the sub-list for method input_type
-	15, // [15:15] is the sub-list for extension type_name
-	15, // [15:15] is the sub-list for extension extendee
-	0,  // [0:15] is the sub-list for field type_name
+	9,  // 11: fnbpos.pos.v1.KitchenLine.qty:type_name -> fnbpos.common.v1.Quantity
+	8,  // 12: fnbpos.pos.v1.KitchenTicketUpdate.envelope:type_name -> fnbpos.common.v1.Envelope
+	8,  // 13: fnbpos.pos.v1.SaleReversed.envelope:type_name -> fnbpos.common.v1.Envelope
+	0,  // 14: fnbpos.pos.v1.SaleReversed.reason:type_name -> fnbpos.pos.v1.ReversalReason
+	9,  // 15: fnbpos.pos.v1.SaleReversed.new_qty:type_name -> fnbpos.common.v1.Quantity
+	16, // [16:16] is the sub-list for method output_type
+	16, // [16:16] is the sub-list for method input_type
+	16, // [16:16] is the sub-list for extension type_name
+	16, // [16:16] is the sub-list for extension extendee
+	0,  // [0:16] is the sub-list for field type_name
 }
 
 func init() { file_pos_v1_sale_proto_init() }
@@ -725,7 +828,7 @@ func file_pos_v1_sale_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_pos_v1_sale_proto_rawDesc), len(file_pos_v1_sale_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   6,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

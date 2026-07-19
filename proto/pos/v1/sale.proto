@@ -64,6 +64,17 @@ message KitchenLine {
   string note = 5;
 }
 
+// pos.kitchen.<tenant>.<outlet>.update — cập nhật vòng đời vé bếp (bump/recall/ready/void). v0.5.0.
+message KitchenTicketUpdate {
+  fnbpos.common.v1.Envelope envelope = 1;
+  string order_id = 2;
+  string outlet_id = 3;
+  int32 line_no = 4;      // 0 = cả vé
+  string status = 5;      // new|preparing|ready|bumped|recalled|voided
+  string station = 6;
+  int64 at_unix = 7;
+}
+
 // pos.sale.reversed — void/refund/sửa qty. Idempotent theo reversal_id.
 message SaleReversed {
   fnbpos.common.v1.Envelope envelope = 1;

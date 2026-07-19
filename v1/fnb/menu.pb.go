@@ -147,10 +147,12 @@ type MenuItem struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	MenuItemId    string                 `protobuf:"bytes,1,opt,name=menu_item_id,json=menuItemId,proto3" json:"menu_item_id,omitempty"`
 	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Price         *common.Money          `protobuf:"bytes,3,opt,name=price,proto3" json:"price,omitempty"`
+	Price         *common.Money          `protobuf:"bytes,3,opt,name=price,proto3" json:"price,omitempty"`       // giá net
 	Channels      []string               `protobuf:"bytes,4,rep,name=channels,proto3" json:"channels,omitempty"` // allow-list: pos,kiosk,in_seat,pickup,online
 	Active        bool                   `protobuf:"varint,5,opt,name=active,proto3" json:"active,omitempty"`
-	Version       uint64                 `protobuf:"varint,6,opt,name=version,proto3" json:"version,omitempty"` // monotonic per (outlet, menu_item) — D3
+	Version       uint64                 `protobuf:"varint,6,opt,name=version,proto3" json:"version,omitempty"`                                 // monotonic per (outlet, menu_item) — D3
+	TaxGroup      string                 `protobuf:"bytes,7,opt,name=tax_group,json=taxGroup,proto3" json:"tax_group,omitempty"`                // nhóm thuế suất (DEC-05: đa suất per-line)
+	OriginalPrice *common.Money          `protobuf:"bytes,8,opt,name=original_price,json=originalPrice,proto3" json:"original_price,omitempty"` // giá gạch KM (nếu có)
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -225,6 +227,20 @@ func (x *MenuItem) GetVersion() uint64 {
 		return x.Version
 	}
 	return 0
+}
+
+func (x *MenuItem) GetTaxGroup() string {
+	if x != nil {
+		return x.TaxGroup
+	}
+	return ""
+}
+
+func (x *MenuItem) GetOriginalPrice() *common.Money {
+	if x != nil {
+		return x.OriginalPrice
+	}
+	return nil
 }
 
 // fnb.menu.changed — thêm/sửa/xoá (deleted=tombstone).
@@ -470,7 +486,7 @@ const file_fnb_v1_menu_proto_rawDesc = "" +
 	"\x11MenuQueryResponse\x126\n" +
 	"\benvelope\x18\x01 \x01(\v2\x1a.fnbpos.common.v1.EnvelopeR\benvelope\x12\x18\n" +
 	"\aversion\x18\x02 \x01(\x04R\aversion\x12-\n" +
-	"\x05items\x18\x03 \x03(\v2\x17.fnbpos.fnb.v1.MenuItemR\x05items\"\xbd\x01\n" +
+	"\x05items\x18\x03 \x03(\v2\x17.fnbpos.fnb.v1.MenuItemR\x05items\"\x9a\x02\n" +
 	"\bMenuItem\x12 \n" +
 	"\fmenu_item_id\x18\x01 \x01(\tR\n" +
 	"menuItemId\x12\x12\n" +
@@ -478,7 +494,9 @@ const file_fnb_v1_menu_proto_rawDesc = "" +
 	"\x05price\x18\x03 \x01(\v2\x17.fnbpos.common.v1.MoneyR\x05price\x12\x1a\n" +
 	"\bchannels\x18\x04 \x03(\tR\bchannels\x12\x16\n" +
 	"\x06active\x18\x05 \x01(\bR\x06active\x12\x18\n" +
-	"\aversion\x18\x06 \x01(\x04R\aversion\"\xb8\x01\n" +
+	"\aversion\x18\x06 \x01(\x04R\aversion\x12\x1b\n" +
+	"\ttax_group\x18\a \x01(\tR\btaxGroup\x12>\n" +
+	"\x0eoriginal_price\x18\b \x01(\v2\x17.fnbpos.common.v1.MoneyR\roriginalPrice\"\xb8\x01\n" +
 	"\vMenuChanged\x126\n" +
 	"\benvelope\x18\x01 \x01(\v2\x1a.fnbpos.common.v1.EnvelopeR\benvelope\x12\x1b\n" +
 	"\toutlet_id\x18\x02 \x01(\tR\boutletId\x12 \n" +
@@ -529,15 +547,16 @@ var file_fnb_v1_menu_proto_depIdxs = []int32{
 	6, // 1: fnbpos.fnb.v1.MenuQueryResponse.envelope:type_name -> fnbpos.common.v1.Envelope
 	2, // 2: fnbpos.fnb.v1.MenuQueryResponse.items:type_name -> fnbpos.fnb.v1.MenuItem
 	7, // 3: fnbpos.fnb.v1.MenuItem.price:type_name -> fnbpos.common.v1.Money
-	6, // 4: fnbpos.fnb.v1.MenuChanged.envelope:type_name -> fnbpos.common.v1.Envelope
-	6, // 5: fnbpos.fnb.v1.PriceChanged.envelope:type_name -> fnbpos.common.v1.Envelope
-	7, // 6: fnbpos.fnb.v1.PriceChanged.price:type_name -> fnbpos.common.v1.Money
-	6, // 7: fnbpos.fnb.v1.ItemAvailabilityChanged.envelope:type_name -> fnbpos.common.v1.Envelope
-	8, // [8:8] is the sub-list for method output_type
-	8, // [8:8] is the sub-list for method input_type
-	8, // [8:8] is the sub-list for extension type_name
-	8, // [8:8] is the sub-list for extension extendee
-	0, // [0:8] is the sub-list for field type_name
+	7, // 4: fnbpos.fnb.v1.MenuItem.original_price:type_name -> fnbpos.common.v1.Money
+	6, // 5: fnbpos.fnb.v1.MenuChanged.envelope:type_name -> fnbpos.common.v1.Envelope
+	6, // 6: fnbpos.fnb.v1.PriceChanged.envelope:type_name -> fnbpos.common.v1.Envelope
+	7, // 7: fnbpos.fnb.v1.PriceChanged.price:type_name -> fnbpos.common.v1.Money
+	6, // 8: fnbpos.fnb.v1.ItemAvailabilityChanged.envelope:type_name -> fnbpos.common.v1.Envelope
+	9, // [9:9] is the sub-list for method output_type
+	9, // [9:9] is the sub-list for method input_type
+	9, // [9:9] is the sub-list for extension type_name
+	9, // [9:9] is the sub-list for extension extendee
+	0, // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_fnb_v1_menu_proto_init() }

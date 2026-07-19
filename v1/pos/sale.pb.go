@@ -163,6 +163,9 @@ type SaleLine struct {
 	Modifiers     []*Modifier            `protobuf:"bytes,6,rep,name=modifiers,proto3" json:"modifiers,omitempty"`                           // modifier mang định lượng NVL
 	ComboChoices  []string               `protobuf:"bytes,7,rep,name=combo_choices,json=comboChoices,proto3" json:"combo_choices,omitempty"` // nhánh combo swappable đã chọn (component_ref)
 	UnitPrice     *common.Money          `protobuf:"bytes,8,opt,name=unit_price,json=unitPrice,proto3" json:"unit_price,omitempty"`          // giá đã chốt (COGS join theo sale_line_id)
+	LineDiscount  *common.Money          `protobuf:"bytes,9,opt,name=line_discount,json=lineDiscount,proto3" json:"line_discount,omitempty"` // chiết khấu dòng (DEC-05)
+	Tax           *common.Money          `protobuf:"bytes,10,opt,name=tax,proto3" json:"tax,omitempty"`                                      // thuế dòng theo tax_group (DEC-05)
+	CogsHint      *common.Money          `protobuf:"bytes,11,opt,name=cogs_hint,json=cogsHint,proto3" json:"cogs_hint,omitempty"`            // COGS gợi ý (báo cáo biên lợi nhuận M13)
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -253,6 +256,27 @@ func (x *SaleLine) GetUnitPrice() *common.Money {
 	return nil
 }
 
+func (x *SaleLine) GetLineDiscount() *common.Money {
+	if x != nil {
+		return x.LineDiscount
+	}
+	return nil
+}
+
+func (x *SaleLine) GetTax() *common.Money {
+	if x != nil {
+		return x.Tax
+	}
+	return nil
+}
+
+func (x *SaleLine) GetCogsHint() *common.Money {
+	if x != nil {
+		return x.CogsHint
+	}
+	return nil
+}
+
 type Modifier struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ModifierId    string                 `protobuf:"bytes,1,opt,name=modifier_id,json=modifierId,proto3" json:"modifier_id,omitempty"`
@@ -314,6 +338,7 @@ type SaleReversed struct {
 	SaleLineId    string                 `protobuf:"bytes,4,opt,name=sale_line_id,json=saleLineId,proto3" json:"sale_line_id,omitempty"`
 	LineRevision  uint32                 `protobuf:"varint,5,opt,name=line_revision,json=lineRevision,proto3" json:"line_revision,omitempty"` // bản committed đang bị đảo
 	Reason        ReversalReason         `protobuf:"varint,6,opt,name=reason,proto3,enum=fnbpos.pos.v1.ReversalReason" json:"reason,omitempty"`
+	NewQty        *common.Quantity       `protobuf:"bytes,7,opt,name=new_qty,json=newQty,proto3" json:"new_qty,omitempty"` // reversal MỘT PHẦN (QTY_ADJUST): số lượng còn lại
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -390,6 +415,13 @@ func (x *SaleReversed) GetReason() ReversalReason {
 	return ReversalReason_REVERSAL_REASON_UNSPECIFIED
 }
 
+func (x *SaleReversed) GetNewQty() *common.Quantity {
+	if x != nil {
+		return x.NewQty
+	}
+	return nil
+}
+
 var File_pos_v1_sale_proto protoreflect.FileDescriptor
 
 const file_pos_v1_sale_proto_rawDesc = "" +
@@ -400,7 +432,7 @@ const file_pos_v1_sale_proto_rawDesc = "" +
 	"\toutlet_id\x18\x02 \x01(\tR\boutletId\x12!\n" +
 	"\fwarehouse_id\x18\x03 \x01(\tR\vwarehouseId\x12\x19\n" +
 	"\border_id\x18\x04 \x01(\tR\aorderId\x12-\n" +
-	"\x05lines\x18\x06 \x03(\v2\x17.fnbpos.pos.v1.SaleLineR\x05linesJ\x04\b\x05\x10\x06\"\xd8\x02\n" +
+	"\x05lines\x18\x06 \x03(\v2\x17.fnbpos.pos.v1.SaleLineR\x05linesJ\x04\b\x05\x10\x06\"\xf7\x03\n" +
 	"\bSaleLine\x12 \n" +
 	"\fsale_line_id\x18\x01 \x01(\tR\n" +
 	"saleLineId\x12#\n" +
@@ -412,11 +444,15 @@ const file_pos_v1_sale_proto_rawDesc = "" +
 	"\tmodifiers\x18\x06 \x03(\v2\x17.fnbpos.pos.v1.ModifierR\tmodifiers\x12#\n" +
 	"\rcombo_choices\x18\a \x03(\tR\fcomboChoices\x126\n" +
 	"\n" +
-	"unit_price\x18\b \x01(\v2\x17.fnbpos.common.v1.MoneyR\tunitPrice\"Y\n" +
+	"unit_price\x18\b \x01(\v2\x17.fnbpos.common.v1.MoneyR\tunitPrice\x12<\n" +
+	"\rline_discount\x18\t \x01(\v2\x17.fnbpos.common.v1.MoneyR\flineDiscount\x12)\n" +
+	"\x03tax\x18\n" +
+	" \x01(\v2\x17.fnbpos.common.v1.MoneyR\x03tax\x124\n" +
+	"\tcogs_hint\x18\v \x01(\v2\x17.fnbpos.common.v1.MoneyR\bcogsHint\"Y\n" +
 	"\bModifier\x12\x1f\n" +
 	"\vmodifier_id\x18\x01 \x01(\tR\n" +
 	"modifierId\x12,\n" +
-	"\x03qty\x18\x02 \x01(\v2\x1a.fnbpos.common.v1.QuantityR\x03qty\"\x80\x02\n" +
+	"\x03qty\x18\x02 \x01(\v2\x1a.fnbpos.common.v1.QuantityR\x03qty\"\xb5\x02\n" +
 	"\fSaleReversed\x126\n" +
 	"\benvelope\x18\x01 \x01(\v2\x1a.fnbpos.common.v1.EnvelopeR\benvelope\x12\x1f\n" +
 	"\vreversal_id\x18\x02 \x01(\tR\n" +
@@ -425,7 +461,8 @@ const file_pos_v1_sale_proto_rawDesc = "" +
 	"\fsale_line_id\x18\x04 \x01(\tR\n" +
 	"saleLineId\x12#\n" +
 	"\rline_revision\x18\x05 \x01(\rR\flineRevision\x125\n" +
-	"\x06reason\x18\x06 \x01(\x0e2\x1d.fnbpos.pos.v1.ReversalReasonR\x06reason*W\n" +
+	"\x06reason\x18\x06 \x01(\x0e2\x1d.fnbpos.pos.v1.ReversalReasonR\x06reason\x123\n" +
+	"\anew_qty\x18\a \x01(\v2\x1a.fnbpos.common.v1.QuantityR\x06newQty*W\n" +
 	"\x0eReversalReason\x12\x1f\n" +
 	"\x1bREVERSAL_REASON_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04VOID\x10\x01\x12\n" +
@@ -459,19 +496,23 @@ var file_pos_v1_sale_proto_goTypes = []any{
 	(*common.Money)(nil),    // 7: fnbpos.common.v1.Money
 }
 var file_pos_v1_sale_proto_depIdxs = []int32{
-	5, // 0: fnbpos.pos.v1.SaleCommitted.envelope:type_name -> fnbpos.common.v1.Envelope
-	2, // 1: fnbpos.pos.v1.SaleCommitted.lines:type_name -> fnbpos.pos.v1.SaleLine
-	6, // 2: fnbpos.pos.v1.SaleLine.qty:type_name -> fnbpos.common.v1.Quantity
-	3, // 3: fnbpos.pos.v1.SaleLine.modifiers:type_name -> fnbpos.pos.v1.Modifier
-	7, // 4: fnbpos.pos.v1.SaleLine.unit_price:type_name -> fnbpos.common.v1.Money
-	6, // 5: fnbpos.pos.v1.Modifier.qty:type_name -> fnbpos.common.v1.Quantity
-	5, // 6: fnbpos.pos.v1.SaleReversed.envelope:type_name -> fnbpos.common.v1.Envelope
-	0, // 7: fnbpos.pos.v1.SaleReversed.reason:type_name -> fnbpos.pos.v1.ReversalReason
-	8, // [8:8] is the sub-list for method output_type
-	8, // [8:8] is the sub-list for method input_type
-	8, // [8:8] is the sub-list for extension type_name
-	8, // [8:8] is the sub-list for extension extendee
-	0, // [0:8] is the sub-list for field type_name
+	5,  // 0: fnbpos.pos.v1.SaleCommitted.envelope:type_name -> fnbpos.common.v1.Envelope
+	2,  // 1: fnbpos.pos.v1.SaleCommitted.lines:type_name -> fnbpos.pos.v1.SaleLine
+	6,  // 2: fnbpos.pos.v1.SaleLine.qty:type_name -> fnbpos.common.v1.Quantity
+	3,  // 3: fnbpos.pos.v1.SaleLine.modifiers:type_name -> fnbpos.pos.v1.Modifier
+	7,  // 4: fnbpos.pos.v1.SaleLine.unit_price:type_name -> fnbpos.common.v1.Money
+	7,  // 5: fnbpos.pos.v1.SaleLine.line_discount:type_name -> fnbpos.common.v1.Money
+	7,  // 6: fnbpos.pos.v1.SaleLine.tax:type_name -> fnbpos.common.v1.Money
+	7,  // 7: fnbpos.pos.v1.SaleLine.cogs_hint:type_name -> fnbpos.common.v1.Money
+	6,  // 8: fnbpos.pos.v1.Modifier.qty:type_name -> fnbpos.common.v1.Quantity
+	5,  // 9: fnbpos.pos.v1.SaleReversed.envelope:type_name -> fnbpos.common.v1.Envelope
+	0,  // 10: fnbpos.pos.v1.SaleReversed.reason:type_name -> fnbpos.pos.v1.ReversalReason
+	6,  // 11: fnbpos.pos.v1.SaleReversed.new_qty:type_name -> fnbpos.common.v1.Quantity
+	12, // [12:12] is the sub-list for method output_type
+	12, // [12:12] is the sub-list for method input_type
+	12, // [12:12] is the sub-list for extension type_name
+	12, // [12:12] is the sub-list for extension extendee
+	0,  // [0:12] is the sub-list for field type_name
 }
 
 func init() { file_pos_v1_sale_proto_init() }

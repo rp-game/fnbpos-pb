@@ -22,10 +22,13 @@ message SaleLine {
   uint32 line_revision = 2;
   string menu_item_id = 3;
   string variation_id = 4;
-  fnbpos.common.v1.Quantity qty = 5;     // qty/weight + UoM (cân ký, định lượng)
-  repeated Modifier modifiers = 6;       // modifier mang định lượng NVL
-  repeated string combo_choices = 7;     // nhánh combo swappable đã chọn (component_ref)
-  fnbpos.common.v1.Money unit_price = 8; // giá đã chốt (COGS join theo sale_line_id)
+  fnbpos.common.v1.Quantity qty = 5;      // qty/weight + UoM (cân ký, định lượng)
+  repeated Modifier modifiers = 6;        // modifier mang định lượng NVL
+  repeated string combo_choices = 7;      // nhánh combo swappable đã chọn (component_ref)
+  fnbpos.common.v1.Money unit_price = 8;  // giá đã chốt (COGS join theo sale_line_id)
+  fnbpos.common.v1.Money line_discount = 9;  // chiết khấu dòng (DEC-05)
+  fnbpos.common.v1.Money tax = 10;           // thuế dòng theo tax_group (DEC-05)
+  fnbpos.common.v1.Money cogs_hint = 11;     // COGS gợi ý (báo cáo biên lợi nhuận M13)
 }
 
 message Modifier {
@@ -49,4 +52,5 @@ message SaleReversed {
   string sale_line_id = 4;
   uint32 line_revision = 5;               // bản committed đang bị đảo
   ReversalReason reason = 6;
+  fnbpos.common.v1.Quantity new_qty = 7;  // reversal MỘT PHẦN (QTY_ADJUST): số lượng còn lại
 }

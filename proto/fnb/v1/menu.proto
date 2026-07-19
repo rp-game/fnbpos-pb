@@ -22,10 +22,12 @@ message MenuQueryResponse {
 message MenuItem {
   string menu_item_id = 1;
   string name = 2;
-  fnbpos.common.v1.Money price = 3;
-  repeated string channels = 4;          // allow-list: pos,kiosk,in_seat,pickup,online
+  fnbpos.common.v1.Money price = 3;        // giá net
+  repeated string channels = 4;           // allow-list: pos,kiosk,in_seat,pickup,online
   bool active = 5;
-  uint64 version = 6;                     // monotonic per (outlet, menu_item) — D3
+  uint64 version = 6;                      // monotonic per (outlet, menu_item) — D3
+  string tax_group = 7;                    // nhóm thuế suất (DEC-05: đa suất per-line)
+  fnbpos.common.v1.Money original_price = 8;  // giá gạch KM (nếu có)
 }
 
 // Ba event nuôi read-model của pos — CÙNG một `version` đơn điệu per (outlet, menu_item) (D3).

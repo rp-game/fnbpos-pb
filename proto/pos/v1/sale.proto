@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package fnbpos.pos.v1;
+
+option go_package = "github.com/mana-fnb/fnbpos-pb/v1/pos";
+
+import "common/v1/envelope.proto";
+
+// pos.sale.committed — pos -> fnb (async, publish).
+// Idempotent theo (tenant_id, order_id, sale_line_id, line_revision).
+message SaleCommitted {
+  fnbpos.common.v1.Envelope envelope = 1;
+  string outlet_id = 2;
+  string warehouse_id = 3;               // fnb trừ kho từ kho này
+  string order_id = 4;
+  reserved 5;                            // (bỏ currency top-level — dùng Money.currency)
+  repeated SaleLine lines = 6;
+}
+
+message SaleLine {
+  string sale_line_id = 1;
+  uint32 line_revision = 2;
+  string menu_item_id = 3;
+  string variation_id = 4;
+  fnbpos.common.v1.Quantity qty = 5;     // qty/weight + UoM (cân ký, định lượng)
+  repeated Modifier modifiers = 6;       // modifier mang định lượng NVL
+  repeated string combo_choices = 7;     // nhánh combo swappable đã chọn (component_ref)
+  fnbpos.common.v1.Money unit_price = 8; // giá đã chốt (COGS join theo sale_line_id)
+}
+
+message Modifier {
+  string modifier_id = 1;
+  fnbpos.common.v1.Quantity qty = 2;
+}
+
+// Nhánh compensation của saga bán→trừ-kho — rẽ theo reason.
+enum ReversalReason {
+  REVERSAL_REASON_UNSPECIFIED = 0;
+  VOID = 1;        // huỷ dòng chưa chế biến → hoàn kho
+  REFUND = 2;      // hoàn tiền
+  QTY_ADJUST = 3;  // sửa số lượng (reversal một phần — new_qty thêm ở G0)
+}
+
+// pos.sale.reversed — void/refund/sửa qty. Idempotent theo reversal_id.
+message SaleReversed {
+  fnbpos.common.v1.Envelope envelope = 1;
+  string reversal_id = 2;
+  string order_id = 3;
+  string sale_line_id = 4;
+  uint32 line_revision = 5;               // bản committed đang bị đảo
+  ReversalReason reason = 6;
+}

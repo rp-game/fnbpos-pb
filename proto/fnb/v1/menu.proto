@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package fnbpos.fnb.v1;
+
+option go_package = "github.com/mana-fnb/fnbpos-pb/v1/fnb";
+
+import "common/v1/envelope.proto";
+
+// fnb.menu.query.v1 (request/reply) — pos BOOTSTRAP/SYNC read-model (không dùng trên hot-path bán).
+message MenuQueryRequest {
+  fnbpos.common.v1.Envelope envelope = 1;
+  string outlet_id = 2;
+  string locale = 3;
+}
+
+message MenuQueryResponse {
+  fnbpos.common.v1.Envelope envelope = 1;
+  uint64 version = 2;                   // watermark: version cao nhất của snapshot (D3)
+  repeated MenuItem items = 3;
+}
+
+message MenuItem {
+  string menu_item_id = 1;
+  string name = 2;
+  fnbpos.common.v1.Money price = 3;
+  repeated string channels = 4;          // allow-list: pos,kiosk,in_seat,pickup,online
+  bool active = 5;
+  uint64 version = 6;                     // monotonic per (outlet, menu_item) — D3
+}
+
+// Ba event nuôi read-model của pos — CÙNG một `version` đơn điệu per (outlet, menu_item) (D3).
+
+// fnb.menu.changed — thêm/sửa/xoá (deleted=tombstone).
+message MenuChanged {
+  fnbpos.common.v1.Envelope envelope = 1;
+  string outlet_id = 2;
+  string menu_item_id = 3;
+  uint64 version = 4;
+  bool deleted = 5;                       // tombstone: giữ tới hết cửa sổ replay
+}
+
+// fnb.price.changed — đổi giá/thuế-suất.
+message PriceChanged {
+  fnbpos.common.v1.Envelope envelope = 1;
+  string outlet_id = 2;
+  string menu_item_id = 3;
+  fnbpos.common.v1.Money price = 4;
+  uint64 version = 5;
+}
+
+// fnb.item.availability.changed — 86 / re-open.
+message ItemAvailabilityChanged {
+  fnbpos.common.v1.Envelope envelope = 1;
+  string outlet_id = 2;
+  string menu_item_id = 3;
+  bool available = 4;
+  uint64 version = 5;
+}

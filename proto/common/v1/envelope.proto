@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package fnbpos.common.v1;
+
+option go_package = "github.com/mana-fnb/fnbpos-pb/v1/common";
+
+import "google/protobuf/timestamp.proto";
+
+// Envelope is attached to every fnbpos message.
+// Domain-neutral: only OPAQUE ids — no host types (no organizer/event/Item/room).
+message Envelope {
+  string schema_version = 1;                    // contract version, e.g. "1"
+  string message_id = 2;                         // dedup/trace id
+  string tenant_id = 3;                          // opaque, host-assigned (internal trust)
+  google.protobuf.Timestamp occurred_at = 4;     // business time (host clock / ClockPort)
+}
+
+// Money is minor-unit + ISO-4217 currency (multi-currency, host-neutral).
+message Money {
+  int64 amount_minor = 1;   // e.g. đồng (VND, scale 0) or cents (USD, scale 2)
+  string currency = 2;      // "VND", "USD", ...
+}
+
+// Quantity keeps decimal precision (as string) + an opaque unit-of-measure code,
+// so "đếm cái" (pcs) vs "cân ký" (kg) vs "định lượng NVL" (ml) không bị mất UoM.
+message Quantity {
+  string value = 1;   // decimal-as-string, e.g. "1", "0.606", "330"
+  string uom = 2;     // opaque unit code: "pcs","kg","ml","shot",...
+}

@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package fnbpos.fnb.v1;
+
+option go_package = "github.com/mana-fnb/fnbpos-pb/v1/fnb";
+
+import "common/v1/envelope.proto";
+
+// fnb.stock.shortfall — fnb -> pos: trừ kho fail / không đủ NVL sau khi đã bán.
+// Đường báo ngược cho saga bán→trừ-kho (A6). Payload đầy đủ (lot/qty thiếu) bổ sung ở G0 (additive).
+message StockShortfall {
+  fnbpos.common.v1.Envelope envelope = 1;
+  string outlet_id = 2;
+  string warehouse_id = 3;
+  string order_id = 4;
+  string sale_line_id = 5;
+  string menu_item_id = 6;
+}

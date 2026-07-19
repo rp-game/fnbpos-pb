@@ -44,6 +44,26 @@ enum ReversalReason {
   QTY_ADJUST = 3;  // sửa số lượng (reversal một phần — new_qty thêm ở G0)
 }
 
+// pos.kitchen.<tenant>.<outlet>.ticket — pos -> KDS (qua stream POS_KITCHEN + WS gateway). v0.4.0.
+message KitchenTicket {
+  fnbpos.common.v1.Envelope envelope = 1;
+  string order_id = 2;
+  string public_id = 3;
+  string outlet_id = 4;
+  string terminal_id = 5;
+  string staff_id = 6;
+  repeated KitchenLine lines = 7;
+  int64 created_at_unix = 8;
+}
+
+message KitchenLine {
+  string menu_item_id = 1;
+  string name = 2;                          // tên món (kèm biến thể)
+  fnbpos.common.v1.Quantity qty = 3;
+  repeated string modifiers = 4;            // code/tên modifier (hiển thị bếp)
+  string note = 5;
+}
+
 // pos.sale.reversed — void/refund/sửa qty. Idempotent theo reversal_id.
 message SaleReversed {
   fnbpos.common.v1.Envelope envelope = 1;

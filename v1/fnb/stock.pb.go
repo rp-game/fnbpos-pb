@@ -7,7 +7,7 @@
 package fnb
 
 import (
-	common "github.com/mana-fnb/fnbpos-pb/v1/common"
+	common "github.com/rp-game/fnbpos-pb/v1/common"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -121,7 +121,7 @@ const file_fnb_v1_stock_proto_rawDesc = "" +
 	"\fsale_line_id\x18\x05 \x01(\tR\n" +
 	"saleLineId\x12 \n" +
 	"\fmenu_item_id\x18\x06 \x01(\tR\n" +
-	"menuItemIdB&Z$github.com/mana-fnb/fnbpos-pb/v1/fnbb\x06proto3"
+	"menuItemIdB%Z#github.com/rp-game/fnbpos-pb/v1/fnbb\x06proto3"
 
 var (
 	file_fnb_v1_stock_proto_rawDescOnce sync.Once

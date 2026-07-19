@@ -13,7 +13,7 @@ PROTOS=$(find proto -name '*.proto' | sort)
 protoc -I proto \
   --experimental_allow_proto3_optional \
   --go_out=. \
-  --go_opt=module=github.com/mana-fnb/fnbpos-pb \
+  --go_opt=module=github.com/rp-game/fnbpos-pb \
   --go_opt=Mgoogle/protobuf/timestamp.proto=google.golang.org/protobuf/types/known/timestamppb \
   $PROTOS
 

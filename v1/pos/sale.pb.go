@@ -7,7 +7,7 @@
 package pos
 
 import (
-	common "github.com/mana-fnb/fnbpos-pb/v1/common"
+	common "github.com/rp-game/fnbpos-pb/v1/common"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -432,7 +432,7 @@ const file_pos_v1_sale_proto_rawDesc = "" +
 	"\n" +
 	"\x06REFUND\x10\x02\x12\x0e\n" +
 	"\n" +
-	"QTY_ADJUST\x10\x03B&Z$github.com/mana-fnb/fnbpos-pb/v1/posb\x06proto3"
+	"QTY_ADJUST\x10\x03B%Z#github.com/rp-game/fnbpos-pb/v1/posb\x06proto3"
 
 var (
 	file_pos_v1_sale_proto_rawDescOnce sync.Once

@@ -6,7 +6,7 @@ với mantik** (`mantik_pb`/`api`) để **nhiều dự án dùng chung** (manti
 > Thiết kế: [`../f&b.research.md`](../f&b.research.md) (§A5/A6/A7) · Task: `S-05`.
 
 ## Nguyên tắc (bất biến)
-- **Độc lập:** repo/module riêng; service chỉ **consume** (`go get github.com/mana-fnb/fnbpos-pb@vX`).
+- **Độc lập:** repo/module riêng; service chỉ **consume** (`go get github.com/rp-game/fnbpos-pb@vX`).
   **KHÔNG** phụ thuộc `mantik_pb`; **KHÔNG** ai nhét proto này vào `mantik_pb`.
 - **Domain-neutral:** chỉ **id opaque** (`tenant_id`, `outlet_id`, `warehouse_id`, `delivery_ref`).
   **CẤM** type host: `organizer_id`/`event_id`/`Item`/`room_id`.
@@ -30,12 +30,13 @@ make verify   # gen + tidy + build + diff (CI)
 ```
 Yêu cầu: `protoc`, `protoc-gen-go@v1.36.11`.
 
-## Consume (ở G0-*, chưa làm tại S-05)
+## Consume (từ remote, như mantik_pb)
+Remote: `git@github.com:rp-game/fnbpos-pb.git`. Service chỉ cần require + `go get` (không replace/vendor):
 ```
 // go.mod của fnb-service / pos-service
-require github.com/mana-fnb/fnbpos-pb vX.Y.Z
-// dev cục bộ chưa có remote: replace github.com/mana-fnb/fnbpos-pb => ../fnbpos-pb
+require github.com/rp-game/fnbpos-pb vX.Y.Z
 ```
+Private repo → cần `GOPRIVATE=github.com/rp-game/*` (giống mantik_pb) + git SSH.
 
 ## Trạng thái
 **S-05 — scaffold + khoá seam contract lõi** (envelope + sale.committed/reversed + menu.query +

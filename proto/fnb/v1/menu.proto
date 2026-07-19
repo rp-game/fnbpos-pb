@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package fnbpos.fnb.v1;
 
-option go_package = "github.com/mana-fnb/fnbpos-pb/v1/fnb";
+option go_package = "github.com/rp-game/fnbpos-pb/v1/fnb";
 
 import "common/v1/envelope.proto";
 

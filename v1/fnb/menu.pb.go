@@ -7,7 +7,7 @@
 package fnb
 
 import (
-	common "github.com/mana-fnb/fnbpos-pb/v1/common"
+	common "github.com/rp-game/fnbpos-pb/v1/common"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -499,7 +499,7 @@ const file_fnb_v1_menu_proto_rawDesc = "" +
 	"\fmenu_item_id\x18\x03 \x01(\tR\n" +
 	"menuItemId\x12\x1c\n" +
 	"\tavailable\x18\x04 \x01(\bR\tavailable\x12\x18\n" +
-	"\aversion\x18\x05 \x01(\x04R\aversionB&Z$github.com/mana-fnb/fnbpos-pb/v1/fnbb\x06proto3"
+	"\aversion\x18\x05 \x01(\x04R\aversionB%Z#github.com/rp-game/fnbpos-pb/v1/fnbb\x06proto3"
 
 var (
 	file_fnb_v1_menu_proto_rawDescOnce sync.Once

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package fnbpos.common.v1;
 
-option go_package = "github.com/mana-fnb/fnbpos-pb/v1/common";
+option go_package = "github.com/rp-game/fnbpos-pb/v1/common";
 
 import "google/protobuf/timestamp.proto";
 

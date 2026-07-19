@@ -216,7 +216,7 @@ const file_common_v1_envelope_proto_rawDesc = "" +
 	"\bcurrency\x18\x02 \x01(\tR\bcurrency\"2\n" +
 	"\bQuantity\x12\x14\n" +
 	"\x05value\x18\x01 \x01(\tR\x05value\x12\x10\n" +
-	"\x03uom\x18\x02 \x01(\tR\x03uomB)Z'github.com/mana-fnb/fnbpos-pb/v1/commonb\x06proto3"
+	"\x03uom\x18\x02 \x01(\tR\x03uomB(Z&github.com/rp-game/fnbpos-pb/v1/commonb\x06proto3"
 
 var (
 	file_common_v1_envelope_proto_rawDescOnce sync.Once

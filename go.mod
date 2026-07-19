@@ -1,4 +1,4 @@
-module github.com/mana-fnb/fnbpos-pb
+module github.com/rp-game/fnbpos-pb
 
 go 1.23.0
 

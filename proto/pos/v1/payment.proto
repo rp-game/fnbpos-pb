@@ -1,0 +1,93 @@
+syntax = "proto3";
+
+package fnbpos.pos.v1;
+
+option go_package = "github.com/rp-game/fnbpos-pb/v1/pos";
+
+import "common/v1/envelope.proto";
+
+// G1-52 (pos-payment-interface.md mục 3-5) — hợp đồng NATS giữa fnbpos (pos-service) và host
+// (Mantik/khách sạn, hạ tầng nội bộ). fnbpos KHÔNG biết VNPay/OnePay/PMS cụ thể — method_code là
+// string tự do do host định nghĩa. Subject thật: pos.payment.<tenant>.<event> (DEC-08, tenant Ở GIỮA,
+// xem subject.go) — Envelope.tenant_id vẫn giữ để nhất quán với message khác + tiện log/audit độc lập
+// với subject. connection_key (payment_host_credential) đi THẲNG trong payload các message *_requested
+// (không phải NATS header — outbox hiện chưa hỗ trợ header tuỳ ý) — host dùng để xác thực + định tuyến
+// đúng tenant; KHÔNG xuất hiện trong message *_settled (chiều ngược lại không cần).
+
+enum ChargeStatus {
+  CHARGE_STATUS_UNSPECIFIED = 0;
+  CHARGE_STATUS_PENDING = 1;
+  CHARGE_STATUS_SUCCEEDED = 2;
+  CHARGE_STATUS_FAILED = 3;
+  CHARGE_STATUS_CANCELED = 4;
+}
+
+// pos.payment.<tenant>.charge_requested — fnbpos publish, host subscribe.
+message ChargeRequested {
+  fnbpos.common.v1.Envelope envelope = 1;
+  string outlet_id = 2;
+  string charge_id = 3;
+  string method_code = 4;
+  string public_id = 5;      // orderCode phía host/gateway, PHẢI unique
+  string target_ref = 6;     // chỉ có nghĩa nếu method RequiresTarget (vd room_folio)
+  fnbpos.common.v1.Money amount = 7;
+  string connection_key = 8; // payment_host_credential đã giải mã — host dùng xác thực + định tuyến tenant
+}
+
+// pos.payment.<tenant>.charge_settled — host publish, fnbpos subscribe.
+// CHỈ mang status, KHÔNG mang amount (pos-payment-interface.md mục 7.2 — fnbpos không tin amount
+// từ event này, đã có sẵn từ lúc tạo charge).
+//
+// qr_content: fnbpos.CreateCharge() trả lời NGAY (trước khi host kịp gọi gateway) nên QUÁ TRÌNH
+// tạo QR luôn xảy ra SAU đó — host publish 1 event PENDING kèm qr_content NGAY khi có QR (KHÔNG
+// đổi status, chỉ set qr_content — xem paymentconsumer: chỉ set status khi status=PENDING với
+// qr_content khác rỗng, terminal status (SUCCEEDED/FAILED/CANCELED) vẫn theo đúng luồng cũ).
+message ChargeSettled {
+  fnbpos.common.v1.Envelope envelope = 1;
+  string charge_id = 2;
+  string external_ref = 3;
+  ChargeStatus status = 4;
+  string message = 5;
+  string qr_content = 6;
+}
+
+// pos.payment.<tenant>.charge_cancel_requested — fnbpos publish, chỉ khi charge còn pending.
+// Kết quả huỷ về qua ChargeSettled (không có message kết quả riêng).
+message ChargeCancelRequested {
+  fnbpos.common.v1.Envelope envelope = 1;
+  string charge_id = 2;
+  string connection_key = 3;
+}
+
+// pos.payment.<tenant>.charge_refund_requested — fnbpos publish, chỉ khi charge gốc đã succeeded.
+message ChargeRefundRequested {
+  fnbpos.common.v1.Envelope envelope = 1;
+  string original_charge_id = 2;
+  string refund_charge_id = 3;
+  string public_id = 4;   // KHÔNG trùng public_id của charge gốc (tiền tố "RF-", xem subject.go)
+  fnbpos.common.v1.Money amount = 5;
+  string connection_key = 6;
+}
+
+// pos.payment.<tenant>.charge_refund_settled — host publish, fnbpos subscribe.
+message ChargeRefundSettled {
+  fnbpos.common.v1.Envelope envelope = 1;
+  string refund_charge_id = 2;
+  string external_ref = 3;
+  ChargeStatus status = 4;
+  string message = 5;
+}
+
+// pos.payment.<tenant>.internal_settled — fnbpos publish SAU KHI áp ChargeSettled thành công, cho các
+// module Mantik khác nghe (báo cáo, thông báo) — HOÀN TOÀN TÁCH BIỆT kênh đối thoại với host
+// (pos-payment-interface.md mục 6 bước 6). An toàn mang amount vì đây là fnbpos tự phát, không phải dữ
+// liệu host gửi vào (khác ChargeSettled — mục 7.2).
+message PaymentSettled {
+  fnbpos.common.v1.Envelope envelope = 1;
+  string charge_id = 2;
+  string order_id = 3;      // THƯỜNG rỗng — event này phát ngay sau charge_settled, TRƯỚC khi Sell()
+                            // được gọi (order chưa tồn tại), xem pos-payment-interface.md mục 6
+  string method_code = 4;
+  fnbpos.common.v1.Money amount = 5;
+  ChargeStatus status = 6;
+}
